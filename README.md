@@ -3,7 +3,7 @@
 [![CI](https://github.com/JoWe112/kc-oidc-request-ip-mapper/actions/workflows/ci.yml/badge.svg)](https://github.com/JoWe112/kc-oidc-request-ip-mapper/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
-[![Keycloak](https://img.shields.io/badge/keycloak-26.6.x-brightgreen.svg)](https://www.keycloak.org/)
+[![Keycloak](https://img.shields.io/badge/keycloak-26.7.x-brightgreen.svg)](https://www.keycloak.org/)
 
 A Keycloak OIDC protocol mapper that adds **the IP address of the HTTP request that issued
 the token** as a claim.
@@ -53,7 +53,7 @@ login IP are the same address anyway.
 
 - Java 21
 - Maven 3.9+
-- Keycloak **26.6.x** (Quarkus distribution). The provider is compiled against the exact
+- Keycloak **26.7.x** (Quarkus distribution). The provider is compiled against the exact
   server version — see `keycloak.version` in [pom.xml](pom.xml).
 
 ## Build
@@ -79,17 +79,17 @@ The [Containerfile](Containerfile) builds the JAR, drops it into
 building.
 
 ```bash
-podman build -f Containerfile -t registry.example.com/keycloak/keycloak-request-ip:26.6.4 .
+podman build -f Containerfile -t registry.example.com/keycloak/keycloak-request-ip:26.7.4 .
 ```
 
 Scan before pushing — the registry rejects HIGH/CRITICAL findings:
 
 ```bash
-podman run --rm -v "$HOME/.cache/trivy:/root/.cache/trivy" aquasec/trivy:0.74.0 image --severity HIGH,CRITICAL --exit-code 1 registry.example.com/keycloak/keycloak-request-ip:26.6.4
+podman run --rm -v "$HOME/.cache/trivy:/root/.cache/trivy" aquasec/trivy:0.74.0 image --severity HIGH,CRITICAL --exit-code 1 registry.example.com/keycloak/keycloak-request-ip:26.7.4
 ```
 
 ```bash
-podman push registry.example.com/keycloak/keycloak-request-ip:26.6.4
+podman push registry.example.com/keycloak/keycloak-request-ip:26.7.4
 ```
 
 > The image tag should track the Keycloak version the provider was built against. Bump

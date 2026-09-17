@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Target Keycloak **26.7.4** instead of 26.6.4. The 26.6.x line ended at 26.6.4 and carries
+  CVE-2026-18963 (unauthenticated account takeover via the reset-credentials flow), for which
+  no 26.6.x fix was ever published. 26.7.2 is the first release containing the fix.
+
 ## [0.1.0] - 2026-09-17
 
 ### Added

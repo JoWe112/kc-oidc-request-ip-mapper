@@ -20,7 +20,7 @@ spec:
       containers:
         - name: keycloak
           # Tag must match Chart/app version and the base image in the Containerfile.
-          image: "<<< REPLACE with registry/namespace/keycloak-request-ip:26.6.4 >>>"
+          image: "<<< REPLACE with registry/namespace/keycloak-request-ip:26.7.4 >>>"
           args: ["start", "--optimized"]
           ports:
             - name: http
