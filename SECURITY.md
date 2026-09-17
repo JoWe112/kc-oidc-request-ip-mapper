@@ -4,7 +4,7 @@
 
 | Version | Keycloak | Supported |
 |---|---|---|
-| 0.1.x | 26.6.x | ✅ |
+| 0.1.x | 26.7.x | ✅ |
 
 The provider is compiled against a specific Keycloak version. Running it on a different
 minor release is unsupported and may fail to load.

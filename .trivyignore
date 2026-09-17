@@ -1,0 +1,24 @@
+# Accepted vulnerabilities, with justification and an expiry date.
+#
+# Trivy re-reports an entry once its expiry passes, so nothing here is suppressed
+# permanently — each one comes back for review. Do not add an entry without a reason
+# and a date.
+#
+# Review all entries when bumping keycloak.version.
+
+# java-21-openjdk-headless — bundled LibPNG in the Red Hat OpenJDK build.
+# No fixed version exists at time of writing (Trivy status: "affected"). Clears when
+# Red Hat ships a patched JDK and Keycloak rebuilds its base image. Keycloak does not
+# process PNG data on any request path reachable by an unauthenticated caller.
+CVE-2026-22020 exp:2026-10-17
+
+# io.netty:netty-handler 4.1.136.Final — fixed in 4.1.137.Final, which Keycloak 26.7.4
+# does not yet bundle. Nothing to do here but wait for the next Keycloak release; this
+# is not a dependency this project declares or can override.
+CVE-2026-75595 exp:2026-10-17
+
+# com.microsoft.sqlserver:mssql-jdbc 13.2.1 — the advisory's fixed versions
+# (10.2.4.jre11, 11.2.4.jre11, ...) are all older than the installed 13.2.1, so this
+# looks like a version-comparison artifact rather than real exposure. Moot in any case:
+# the image is built with --db=postgres, so the SQL Server driver is never loaded.
+CVE-2025-59250 exp:2026-10-17

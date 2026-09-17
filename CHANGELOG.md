@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `.trivyignore` recording the base-image findings that cannot be fixed downstream, each with
+  a justification and a 30-day expiry, wired into both the CI scan and the documented local
+  scan command.
+- Target Keycloak **26.7.4** instead of 26.6.4. The 26.6.x line ended at 26.6.4 and carries
+  CVE-2026-18963 (unauthenticated account takeover via the reset-credentials flow), for which
+  no 26.6.x fix was ever published. 26.7.2 is the first release containing the fix.
+
 ## [0.1.0] - 2026-09-17
 
 ### Added
