@@ -24,7 +24,7 @@ jobs:
       java: ${{ steps.filter.outputs.java }}
       image: ${{ steps.filter.outputs.image }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
         id: filter
         with:
@@ -45,7 +45,7 @@ jobs:
     if: needs.changes.outputs.java == 'true' || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v6
@@ -79,7 +79,7 @@ jobs:
       IMAGE: keycloak-request-ip:ci
       TRIVY_VERSION: "0.74.0"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Provides the docker-container driver. The default `docker` driver cannot export
       # build cache, so `cache-to: type=gha` fails immediately without this step.
