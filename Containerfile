@@ -28,7 +28,7 @@ RUN mvn -B -DskipTests package
 # ---------------------------------------------------------------------------------------
 # Stage 2 — Keycloak with the provider installed and the server pre-built
 # ---------------------------------------------------------------------------------------
-FROM quay.io/keycloak/keycloak:26.6.4@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4
+FROM quay.io/keycloak/keycloak:26.7.4@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
 
 # --chown=1000:0 keeps the JAR readable under OpenShift's arbitrary-UID model: the random
 # UID always lands in supplementary group 0, and the default 0644 mode grants it read access.
