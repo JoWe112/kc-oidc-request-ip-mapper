@@ -85,12 +85,17 @@ podman build -f Containerfile -t registry.example.com/keycloak/keycloak-request-
 Scan before pushing — the registry rejects HIGH/CRITICAL findings:
 
 ```bash
-podman run --rm -v "$HOME/.cache/trivy:/root/.cache/trivy" aquasec/trivy:0.74.0 image --severity HIGH,CRITICAL --exit-code 1 registry.example.com/keycloak/keycloak-request-ip:26.7.4
+podman run --rm -v "$HOME/.cache/trivy:/root/.cache/trivy" -v "$PWD/.trivyignore:/.trivyignore:ro" aquasec/trivy:0.74.0 image --ignorefile /.trivyignore --severity HIGH,CRITICAL --exit-code 1 registry.example.com/keycloak/keycloak-request-ip:26.7.4
 ```
 
 ```bash
 podman push registry.example.com/keycloak/keycloak-request-ip:26.7.4
 ```
+
+[.trivyignore](.trivyignore) records the findings currently accepted in the base image, each
+with a justification and an expiry date. Entries expire rather than persist, so they come
+back for review instead of silently accumulating — re-read the file whenever you bump
+`keycloak.version`.
 
 > The image tag should track the Keycloak version the provider was built against. Bump
 > `keycloak.version` in `pom.xml`, the base image in `Containerfile`, and the tag together.

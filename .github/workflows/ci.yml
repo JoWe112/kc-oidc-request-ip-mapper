@@ -102,6 +102,8 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$HOME/.cache/trivy:/root/.cache/trivy" \
+            -v "${PWD}/.trivyignore:/.trivyignore:ro" \
             aquasec/trivy:${TRIVY_VERSION} image \
+              --ignorefile /.trivyignore \
               --severity HIGH,CRITICAL --exit-code 1 \
               "${IMAGE}"
