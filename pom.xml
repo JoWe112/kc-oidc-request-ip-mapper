@@ -23,7 +23,7 @@
       API is not guaranteed stable across minor releases, so bump this together with the
       base image tag in the Containerfile.
     -->
-    <keycloak.version>26.6.4</keycloak.version>
+    <keycloak.version>26.7.3</keycloak.version>
 
     <!-- Keycloak 26.x runs on Java 21. -->
     <maven.compiler.release>21</maven.compiler.release>
