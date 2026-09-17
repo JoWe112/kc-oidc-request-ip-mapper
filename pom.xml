@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example.keycloak</groupId>
+  <artifactId>keycloak-request-ip-mapper</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+
+  <name>Keycloak Request IP Address Mapper</name>
+  <description>
+    OIDC protocol mapper that adds the IP address of the HTTP request that issued the token
+    as a claim.
+  </description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!--
+      Must match the Keycloak version of the server the JAR is deployed into. The provider
+      API is not guaranteed stable across minor releases, so bump this together with the
+      base image tag in the Containerfile.
+    -->
+    <keycloak.version>26.6.4</keycloak.version>
+
+    <!-- Keycloak 26.x runs on Java 21. -->
+    <maven.compiler.release>21</maven.compiler.release>
+
+    <junit.version>5.14.4</junit.version>
+    <mockito.version>5.23.0</mockito.version>
+
+    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+    <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
+  </properties>
+
+  <dependencies>
+    <!--
+      All Keycloak artifacts are `provided`: they are already on the server classpath at
+      runtime. Bundling them would shadow the server's own classes and break the deployment.
+    -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-core</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-server-spi</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--
+      NOT part of the public SPI: org.keycloak.protocol.ProtocolMapper — the interface this
+      provider is registered under in META-INF/services — lives here. See the comment in
+      RequestIpAddressMapper.
+    -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-server-spi-private</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-services</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}-${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <!--
+          Exposes resolved dependency paths as properties, so the Mockito agent below can be
+          referenced as ${org.mockito:mockito-core:jar}.
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>resolve-agent-paths</id>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <!--
+            Load Mockito as a proper JVM agent. Without this it self-attaches, which recent
+            JDKs warn about and a future JDK will reject outright. The property comes from
+            the maven-dependency-plugin:properties execution above.
+
+            The logging manager is set on the command line (not via systemPropertyVariables,
+            which applies too late) because keycloak-services pulls jboss-logmanager onto the
+            test classpath and it complains if java.util.logging is touched first.
+          -->
+          <argLine>-javaagent:${org.mockito:mockito-core:jar}
+            -Djava.util.logging.manager=org.jboss.logmanager.LogManager</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>

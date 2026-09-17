@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: "21"
+
+jobs:
+  # Runs once so each heavy job below can be skipped on unrelated PRs. Skipped-via-`if:`
+  # jobs report success, so required status checks still resolve on docs-only PRs.
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      java: ${{ steps.filter.outputs.java }}
+      image: ${{ steps.filter.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            java:
+              - 'pom.xml'
+              - 'src/**'
+              - '.github/workflows/ci.yml'
+            image:
+              - 'Containerfile'
+              - '.dockerignore'
+              - 'pom.xml'
+              - 'src/**'
+              - '.github/workflows/ci.yml'
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.java == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Verify
+        run: mvn -B verify
+
+      - name: Assert provider is registered in the JAR
+        run: |
+          unzip -p target/keycloak-request-ip-mapper-*.jar \
+            META-INF/services/org.keycloak.protocol.ProtocolMapper \
+            | grep -qx 'com.example.keycloak.mapper.RequestIpAddressMapper'
+
+      - name: Upload provider JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-jar
+          path: target/keycloak-request-ip-mapper-*.jar
+
+  # Deliberately does NOT `needs: build` — a Containerfile-only change (e.g. a Dependabot
+  # base-image bump) must still be built and scanned when the Java job is skipped.
+  image:
+    needs: changes
+    if: needs.changes.outputs.image == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: keycloak-request-ip:ci
+      TRIVY_VERSION: "0.74.0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Containerfile
+          tags: ${{ env.IMAGE }}
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy scan
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$HOME/.cache/trivy:/root/.cache/trivy" \
+            aquasec/trivy:${TRIVY_VERSION} image \
+              --severity HIGH,CRITICAL --exit-code 1 \
+              "${IMAGE}"
