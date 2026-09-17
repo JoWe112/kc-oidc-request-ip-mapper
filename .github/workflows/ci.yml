@@ -81,6 +81,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Provides the docker-container driver. The default `docker` driver cannot export
+      # build cache, so `cache-to: type=gha` fails immediately without this step.
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build image
         uses: docker/build-push-action@v6
         with:
