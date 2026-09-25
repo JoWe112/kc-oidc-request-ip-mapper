@@ -14,7 +14,7 @@
 # Pinned to the build host's own platform: the output is a plain, architecture-independent
 # JAR, so there is nothing to cross-compile and nothing to gain from emulating the target
 # architecture here.
-FROM --platform=$BUILDPLATFORM docker.io/library/maven:3-eclipse-temurin-26@sha256:4e980a3c7def35292c12ce1a1dc7872f02165f11717204c7b1c2dc477e40c1b8 AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/maven:3-eclipse-temurin-26@sha256:c30718f442eb39c55b2d45440bb849d8755ad8d9d6ef67aadefcce150267116f AS build
 
 WORKDIR /workspace
 
