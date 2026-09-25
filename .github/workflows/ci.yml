@@ -36,6 +36,9 @@ jobs:
             image:
               - 'Containerfile'
               - '.dockerignore'
+              # The scan consumes this, so a change to it must re-run the scan —
+              # otherwise a suppression merges without ever being exercised.
+              - '.trivyignore'
               - 'pom.xml'
               - 'src/**'
               - '.github/workflows/ci.yml'
