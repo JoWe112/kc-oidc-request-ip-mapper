@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Accepted CVE-2026-84939 (FreeMarker 2.3.32) after verifying against the Keycloak 26.7.4
+  sources that the path-traversal vector is not reachable: Keycloak never passes a Locale to
+  FreeMarker's template lookup, and user-supplied locales are allowlisted against the realm's
+  supported locales.
 - Accepted four further base-image CVEs in `.trivyignore` (two unfixable `pcre2`, two
   `bcprov-jdk18on` awaiting a Keycloak release bundling 1.85), all expiring 2026-10-17
   alongside the existing entries.

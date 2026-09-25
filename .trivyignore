@@ -41,3 +41,22 @@ CVE-2026-89161 exp:2026-10-17
 # check for a Keycloak release bundling bcprov >= 1.85 before renewing.
 CVE-2026-8763 exp:2026-10-17
 CVE-2026-13506 exp:2026-10-17
+
+# org.freemarker:freemarker 2.3.32 — "path traversal via malformed locale identifier",
+# fixed in 2.3.35. NOT REACHABLE in Keycloak 26.7.4; verified by reading the 26.7.4
+# sources rather than assumed:
+#
+#   1. Keycloak never passes a Locale to FreeMarker. DefaultFreeMarkerProvider calls
+#      cfg.getTemplate(templateName, "UTF-8") — the no-Locale overload — and setLocale()
+#      is never called on any FreeMarker Configuration. Localized lookup therefore uses
+#      the JVM default locale, fixed at startup. Every caller (login forms, email,
+#      welcome page, admin/account console, error handler) uses the same 3-arg
+#      processTemplate(Map, String, Theme) signature, which has no Locale parameter.
+#      Template names are literals or enum-derived, never user input.
+#   2. The resolved locale is allowlisted anyway: DefaultLocaleSelectorProvider.findLocale
+#      matches ui_locales / kc_locale / Accept-Language against the realm's configured
+#      supported locales, so a malformed identifier never becomes a Locale.
+#
+# The jar is bundled in the Keycloak image and cannot be overridden from this repository.
+# Re-check this analysis if Keycloak changes how themes resolve templates.
+CVE-2026-84939 exp:2026-10-17
