@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Accepted four further base-image CVEs in `.trivyignore` (two unfixable `pcre2`, two
+  `bcprov-jdk18on` awaiting a Keycloak release bundling 1.85), all expiring 2026-10-17
+  alongside the existing entries.
+
 - `.trivyignore` recording the base-image findings that cannot be fixed downstream, each with
   a justification and a 30-day expiry, wired into both the CI scan and the documented local
   scan command.

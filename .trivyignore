@@ -22,3 +22,22 @@ CVE-2026-75595 exp:2026-10-17
 # looks like a version-comparison artifact rather than real exposure. Moot in any case:
 # the image is built with --db=postgres, so the SQL Server driver is never loaded.
 CVE-2025-59250 exp:2026-10-17
+
+# --- Added 2026-09-25: newly disclosed, none fixable from this repository ---------------
+# These appeared in Trivy's database without any change to the image, and blocked three
+# unrelated dependency PRs. Keycloak 26.7.4 (2026-09-16) remains the latest release, so
+# there is nothing newer to bump to.
+
+# pcre2 / pcre2-syntax 10.40-6.el9 — Red Hat marks CVE-2026-86145 "will_not_fix" and
+# CVE-2026-89161 "affected"; no patched el9 package exists or is planned. Clears only when
+# Keycloak moves to a newer UBI base.
+CVE-2026-86145 exp:2026-10-17
+CVE-2026-89161 exp:2026-10-17
+
+# org.bouncycastle:bcprov-jdk18on 1.84 — fixed in 1.85, but the jar is bundled in the
+# Keycloak image (both the admin CLI and, importantly, the server runtime at
+# /opt/keycloak/lib/lib/main/). This project cannot override it; only a Keycloak release
+# can. REVIEW FIRST at expiry: unlike the other entries here, a fix exists upstream, so
+# check for a Keycloak release bundling bcprov >= 1.85 before renewing.
+CVE-2026-8763 exp:2026-10-17
+CVE-2026-13506 exp:2026-10-17
